@@ -1,0 +1,76 @@
+﻿@model UserModel
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+
+
+    <div>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+            <form asp-controller="Register" asp-action="SubmitRegister" method="post" class="mt-5 d-flex flex-column justify-content-start align-items-center">
+                    <h1 class="display-4 text-center mb-3">Zarejestuj się</h1>
+
+                    <div class="mb-3 w-100">
+                        <div class="position-relative">
+                            <i class="fa-solid fa-user faicon"></i>
+                            <input type="text" class="form-control inputawesome" name="Username"  placeholder="Login">
+                        </div>
+                        <span asp-validation-for="Username" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3 w-100">
+                        <div class="position-relative">
+                            <i class="fa-solid fa-lock faicon"></i>
+                            <input type="password" class="form-control inputawesome" name="Password" placeholder="Hasło">
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3 w-100">
+                        <div class="position-relative">
+                            <i class="fa-solid fa-lock faicon"></i>
+                            <input type="password" class="form-control inputawesome" name="Ppassword" placeholder="Powtórz hasło">
+                        </div>
+                        <span asp-validation-for="Ppassword" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3 w-100">
+                        <div class="position-relative">
+                            <i class="fa-solid fa-envelope-open faicon"></i>
+                            <input type="email" class="form-control inputawesome" name="Email" placeholder="e-mail">
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3 w-100">
+                        <div class="position-relative">
+                            <i class="fa-solid fa-user faicon"></i>
+                            <input type="text" class="form-control inputawesome" name="Name" placeholder="Imie">
+                        </div>
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3 w-100">
+                    <div class="position-relative">
+                        <i class="fa-solid fa-user faicon"></i>
+                        <input type="text" class="form-control inputawesome" name="Surname" placeholder="Nazwisko">
+                        </div>
+                        <span asp-validation-for="Surname" class="text-danger"></span>
+                    </div>
+                    <div class="text-center mb-3">
+                        <button type="submit" class="btn btn-primary btn-lg">Zarejestruj się</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form asp-controller="Home" asp-action="GoToLogin" class="text-center">
+                <button type="submit" class="btn btn-outline-primary btn-lg">Powrót do logowania</button>
+            </form>
+        </div>
+    </div>
+</div>

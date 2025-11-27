@@ -1,0 +1,64 @@
+﻿@model List<inzynierka.Models.AxeViolation>
+
+@{
+    ViewData["Title"] = "Sprawdź dostępność strony";
+}
+
+<div class="container mt-5">
+    <h1 class="mb-4 text-center">Analiza dostępności strony (WCAG 2.1)</h1>
+
+    <form asp-action="Scan" method="post" class="d-flex justify-content-center">
+        <input type="text" name="url" class="form-control w-50" placeholder="https://example.com" required />
+        <button type="submit" class="btn btn-success ms-2">Skanuj</button>
+    </form>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger mt-3">@ViewBag.Error</div>
+    }
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="mt-5">
+            <h3>Znalezione błędy dostępności:</h3>
+            <table class="table table-striped mt-3">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Poziom</th>
+                        <th>Opis</th>
+                        <th>Fragment HTML</th>
+                        <th>Pomoc</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var v in Model)
+                    {
+                        <tr>
+                            <td>@v.Id</td>
+                            <td>
+                                <span class="badge bg-@GetBadgeColor(v.Impact)">
+                                    @v.Impact
+                                </span>
+                            </td>
+                            <td>@v.Description</td>
+                            <td><code>@v.Nodes.FirstOrDefault()?.Html</code></td>
+                            <td><a href="@v.HelpUrl" target="_blank">Zobacz więcej</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@functions {
+    string GetBadgeColor(string impact) => impact switch
+    {
+        "minor" => "info",
+        "moderate" => "warning",
+        "serious" => "danger",
+        "critical" => "dark",
+        _ => "secondary"
+    };
+}

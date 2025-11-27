@@ -1,0 +1,35 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+    padding: 3px 10%;
+}
+
+
+
+/* Styl dla ikony u¿ytkownika */
+.faicon {
+    position: absolute;
+    top: 50%;
+    left: 10px; /* Dostosuj wartoœæ w zale¿noœci od preferencji */
+    transform: translateY(-50%);
+    color: black; /* Kolor ikony */
+    pointer-events: none; /* Zapobiega aktywacji ikony przez klikniêcie */
+}
+
+.inputawesome{
+    padding-left: 2rem;
+}

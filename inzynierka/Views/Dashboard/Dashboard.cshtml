@@ -1,0 +1,62 @@
+﻿@model IEnumerable<inzynierka.Models.UserModel>
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h1>Dashboard</h1>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Imie
+            </th>
+            <th>
+               Nazwisko
+            </th>
+            <th>
+                Login
+            </th>
+            <th>
+                Hasło
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+                Rola
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Surname)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Username)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Password)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Role)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.UserId">Edytuj</a> |
+                <a asp-action="Details" asp-route-id="@item.UserId">Szczegóły</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
