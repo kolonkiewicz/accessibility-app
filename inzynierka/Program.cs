@@ -6,6 +6,7 @@ namespace inzynierka
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddSingleton<EmailService>();
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 

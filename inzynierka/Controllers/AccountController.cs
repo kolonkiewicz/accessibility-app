@@ -11,7 +11,7 @@ namespace inzynierka.Controllers
 
         public IActionResult Account()
         {
-            using CloudContext cloudContext = new CloudContext();
+            using InzynierkaContext cloudContext = new InzynierkaContext();
             var sessionIdUser = HttpContext.Session.GetString("SessionIdUser");
             ////int? userId = 1;
 
@@ -38,7 +38,7 @@ namespace inzynierka.Controllers
         [HttpPost]
         public ActionResult SubmitChangePassword(UserModel user)
         {
-            using CloudContext cloudContext = new CloudContext();
+            using InzynierkaContext cloudContext = new InzynierkaContext();
 
 
             var sessionIdUser = HttpContext.Session.GetString("SessionIdUser");

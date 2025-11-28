@@ -16,7 +16,7 @@ namespace inzynierka.Controllers
         [HttpPost]
         public ActionResult SubmitLogin(UserModel user) {
 
-            using CloudContext cloudContext = new CloudContext();
+            using InzynierkaContext cloudContext = new InzynierkaContext();
 
             var existinguser = cloudContext.Users.FirstOrDefault(u => u.Username == user.Username );
 

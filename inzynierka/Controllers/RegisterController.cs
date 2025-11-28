@@ -1,10 +1,18 @@
 ﻿using inzynierka.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography;
 
 namespace inzynierka.Controllers
 {
     public class RegisterController : Controller
     {
+        private readonly EmailService _emailService;
+
+        public RegisterController(EmailService emailService)
+        {
+            _emailService = emailService;
+        }
+
         [HttpGet]
         public IActionResult Register()
         {
@@ -14,28 +22,48 @@ namespace inzynierka.Controllers
         [HttpPost]
         public ActionResult SubmitRegister(UserModel user)
         {
-            using CloudContext cloudContext = new CloudContext();
-            var existinglogin = cloudContext.Users.FirstOrDefault(u => u.Username == user.Username);
-            var existingemail = cloudContext.Users.FirstOrDefault(u => u.Email == user.Email);
+            using InzynierkaContext inzynierkaContext = new InzynierkaContext();
+
+            var existinglogin = inzynierkaContext.Users.FirstOrDefault(u => u.Username == user.Username);
+            var existingemail = inzynierkaContext.Users.FirstOrDefault(u => u.Email == user.Email);
 
             if (existingemail == null)
             {
                 if (existinglogin == null)
                 {
                     user.Role = "user";
+
                     if (ModelState.IsValid)
                     {
                         try
                         {
-                            cloudContext.Add(user);
-                            cloudContext.SaveChanges();
-                            TempData["SuccessMessage"] = "Rejestracja zakończona sukcesem!";
-                            return RedirectToAction("GoToLogin", "Home");
+                            // 🔥 GENEROWANIE TOKENU 🔥
+                            user.VerificationToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+                            user.VerificationTokenExpires = DateTime.UtcNow.AddHours(24);
+                            user.EmailConfirmed = false;
 
+                            inzynierkaContext.Users.Add(user);
+                            inzynierkaContext.SaveChanges();
+
+                            // 🔥 WYŚLIJ MAILA 🔥
+                            string link = Url.Action(
+                                "VerifyEmail",
+                                "Register",
+                                new { token = user.VerificationToken },
+                                Request.Scheme);
+
+                            _emailService.SendEmailAsync(
+                                user.Email,
+                                "Potwierdzenie rejestracji",
+                                $"Kliknij aby potwierdzić konto: <a href='{link}'>POTWIERDŹ</a>"
+                            );
+
+                            TempData["SuccessMessage"] = "Rejestracja zakończona — sprawdź email aby potwierdzić konto!";
+                            return RedirectToAction("GoToLogin", "Home");
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
-                            TempData["DangerMessage"] = "Cos poszlo nie tak";
+                            TempData["DangerMessage"] = "Coś poszło nie tak";
                             return View("Register", user);
                         }
                     }
@@ -47,35 +75,43 @@ namespace inzynierka.Controllers
                 }
                 else
                 {
-                    TempData["DangerMessage"] = "Wprowadż poprawne dane!";
-                    ModelState.AddModelError("Username", "Podany Username już istnieje");
+                    TempData["DangerMessage"] = "Wprowadź poprawne dane!";
+                    ModelState.AddModelError("Username", "Podany username już istnieje");
                     return View("Register", user);
                 }
             }
             else
             {
-                TempData["DangerMessage"] = "Wprowadż poprawne dane!";
-                ModelState.AddModelError("Email", "Email juz istnieje");
+                TempData["DangerMessage"] = "Wprowadź poprawne dane!";
+                ModelState.AddModelError("Email", "Email już istnieje");
                 return View("Register", user);
             }
-            //TempData["SuccessMessage"] = "cos sie wyjebalo ";
-            //return View("Register", user);
-            //user.Role = "user";
-            //if (ModelState.IsValid)
-            //{
-            //    TempData["SuccessMessage"] = "Rejestracja zakończona sukcesem!";
-            //    return RedirectToAction("GoToLogin", "Home");
-            //}
-            //else
-            //{
-
-            //    TempData["SuccessMessage"] = "Rejestracja 6546546456456 sukcesem!";
-            //    return View("Register", user);
-            //}
-
-
         }
 
+        // 🔥 AKCJA POTWIERDZAJĄCA EMAIL 🔥
+        public IActionResult VerifyEmail(string token)
+        {
+            using InzynierkaContext inzynierkaContext = new InzynierkaContext();
 
+            if (token == null)
+                return BadRequest("Niepoprawny token");
+
+            var user = inzynierkaContext.Users.FirstOrDefault(u => u.VerificationToken == token);
+
+            if (user == null)
+                return BadRequest("Nieprawidłowy token");
+
+            if (user.VerificationTokenExpires < DateTime.UtcNow)
+                return BadRequest("Token wygasł");
+
+            user.EmailConfirmed = true;
+            user.VerificationToken = null;
+            user.VerificationTokenExpires = null;
+
+            inzynierkaContext.SaveChanges();
+
+            TempData["SuccessMessage"] = "Email potwierdzony! Możesz się zalogować.";
+            return RedirectToAction("GoToLogin", "Home");
+        }
     }
 }

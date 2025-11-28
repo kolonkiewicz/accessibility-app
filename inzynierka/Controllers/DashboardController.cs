@@ -8,7 +8,7 @@ namespace inzynierka.Controllers
     {
         public async Task <IActionResult> Dashboard()
         {
-            using CloudContext cloudContext = new CloudContext();
+            using InzynierkaContext cloudContext = new InzynierkaContext();
 
             var users = await cloudContext.Users.ToListAsync();
 
@@ -19,7 +19,7 @@ namespace inzynierka.Controllers
         public async Task<IActionResult> Details(int? id)
         {
 
-            using CloudContext cloudContext = new CloudContext();
+            using InzynierkaContext cloudContext = new InzynierkaContext();
 
             if (id == null || cloudContext.Users == null)
             {
@@ -39,7 +39,7 @@ namespace inzynierka.Controllers
         // GET: test/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            using CloudContext cloudContext = new CloudContext();
+            using InzynierkaContext cloudContext = new InzynierkaContext();
             if (id == null || cloudContext.Users == null)
             {
                 return NotFound();
@@ -60,7 +60,7 @@ namespace inzynierka.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id,UserModel user)
         {
-            using CloudContext cloudContext = new CloudContext();
+            using InzynierkaContext cloudContext = new InzynierkaContext();
             var sessionIdUser = HttpContext.Session.GetString("SessionIdUser");
 
 

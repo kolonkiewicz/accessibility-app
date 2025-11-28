@@ -31,7 +31,11 @@ namespace inzynierka.Models
         public string Email { get; set; }
         
         public string? Role  { get; set; }
-        public ICollection<FileModel>? Files { get; set; } = null!;
+        public ICollection<ScanModel>? Scans { get; set; } = null!;
+        public bool EmailConfirmed { get; set; } = false;
+        public string? VerificationToken { get; set; }
+        public DateTime? VerificationTokenExpires { get; set; }
+
 
         [NotMapped]
         [Required(ErrorMessage = "To pole jest wymagane")]
