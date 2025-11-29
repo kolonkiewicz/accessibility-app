@@ -23,6 +23,11 @@ public class HomeController : Controller
         return RedirectToAction("Login", "Login");
     }
 
+    public IActionResult GoToResetPassword()
+    {
+        return RedirectToAction("ResetPassword", "ResetPassword");
+    }
+
     public IActionResult GoToRegister()
     {
         return RedirectToAction("Register", "Register");
