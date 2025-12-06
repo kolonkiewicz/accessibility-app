@@ -2,7 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using PuppeteerSharp;
 using System.Text.Json;
-using inzynierka.Models; 
+using Microsoft.EntityFrameworkCore;
+using inzynierka.Models.ViewModels;
 
 public class HomeController : Controller
 {
@@ -64,6 +65,9 @@ public class HomeController : Controller
     {
         using InzynierkaContext _context = new InzynierkaContext();
 
+        var sessionIdUser = HttpContext.Session.GetString("SessionIdUser");
+        int sessionIdUserToInt = int.Parse(sessionIdUser);
+
         if (string.IsNullOrWhiteSpace(url))
         {
             ViewBag.Error = "Podaj poprawny adres URL.";
@@ -102,7 +106,7 @@ public class HomeController : Controller
             {
                 Url = url,
                 FullResultJson = resultsJson,
-                UserId = 1 // TODO: zmień na prawdziwego zalogowanego użytkownika
+                UserId = sessionIdUserToInt 
             };
 
             _context.Scan.Add(scan);
@@ -146,12 +150,21 @@ public class HomeController : Controller
     {
         using InzynierkaContext _context = new InzynierkaContext();
         var scan = _context.Scan
+            .Include(s => s.Violations)
             .Where(s => s.ScanId == id)
             .Select(s => new ScanResultViewModel
             {
                 Url = s.Url,
                 Date = s.ScanDate,
-                Violations = s.Violations.ToList()
+                Violations = s.Violations
+                    .Select(v => new ScanViolationWithFix
+                    {
+                        Violation = v,
+                        Suggestion = _context.FixSuggestions
+                            .Where(f => f.RuleId == v.RuleId)
+                            .Select(f => f.Suggestion)
+                            .FirstOrDefault() ?? "Brak rekomendacji"
+                    }).ToList()
             })
             .FirstOrDefault();
 
@@ -160,4 +173,5 @@ public class HomeController : Controller
 
         return View(scan);
     }
+
 }

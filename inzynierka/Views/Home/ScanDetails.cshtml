@@ -1,4 +1,4 @@
-﻿@model inzynierka.Models.ScanResultViewModel
+﻿@model inzynierka.Models.ViewModels.ScanResultViewModel
 
 <h2>Wyniki skanu: @Model.Url</h2>
 <p>Data skanu: @Model.Date</p>
@@ -19,20 +19,25 @@ else
                 <th>Selector</th>
                 <th>HTML</th>
                 <th>Pomoc</th>
+                <th>Rekomendacja</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var v in Model.Violations)
+            @foreach (var item in Model.Violations)
             {
                 <tr>
-                    <td>@v.RuleId</td>
-                    <td>@v.Impact</td>
-                    <td>@v.Description</td>
-                    <td>@v.Selector</td>
-                    <td><code>@v.Html</code></td>
-                    <td><a href="@v.Help" target="_blank">Wskazówki</a></td>
+                    <td>@item.Violation.RuleId</td>
+                    <td>@item.Violation.Impact</td>
+                    <td>@item.Violation.Description</td>
+                    <td>@item.Violation.Selector</td>
+                    <td><code>@item.Violation.Html</code></td>
+                    <td><a href="@item.Violation.Help" target="_blank">Wskazówki</a></td>
+                    <td style="color: darkgreen; font-weight: bold;">
+                        @item.Suggestion
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
+
 }

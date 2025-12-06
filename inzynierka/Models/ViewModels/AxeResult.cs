@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace inzynierka.Models
+namespace inzynierka.Models.ViewModels
 {
     public class AxeResult
     {

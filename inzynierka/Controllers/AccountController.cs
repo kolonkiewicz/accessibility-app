@@ -7,8 +7,6 @@ namespace inzynierka.Controllers
 {
     public class AccountController : Controller
     {
-
-
         public IActionResult Account()
         {
             using InzynierkaContext cloudContext = new InzynierkaContext();
