@@ -1,0 +1,38 @@
+﻿@model inzynierka.Models.ScanResultViewModel
+
+<h2>Wyniki skanu: @Model.Url</h2>
+<p>Data skanu: @Model.Date</p>
+
+@if (!Model.Violations.Any())
+{
+    <p style="color: green;">Brak błędów 🟢</p>
+}
+else
+{
+    <h3>Znalezione błędy:</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Rule</th>
+                <th>Impact</th>
+                <th>Opis</th>
+                <th>Selector</th>
+                <th>HTML</th>
+                <th>Pomoc</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var v in Model.Violations)
+            {
+                <tr>
+                    <td>@v.RuleId</td>
+                    <td>@v.Impact</td>
+                    <td>@v.Description</td>
+                    <td>@v.Selector</td>
+                    <td><code>@v.Html</code></td>
+                    <td><a href="@v.Help" target="_blank">Wskazówki</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

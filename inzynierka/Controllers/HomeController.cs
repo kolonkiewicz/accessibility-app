@@ -62,6 +62,8 @@ public class HomeController : Controller
     [HttpPost]
     public async Task<IActionResult> Scan(string url)
     {
+        using InzynierkaContext _context = new InzynierkaContext();
+
         if (string.IsNullOrWhiteSpace(url))
         {
             ViewBag.Error = "Podaj poprawny adres URL.";
@@ -70,6 +72,7 @@ public class HomeController : Controller
 
         try
         {
+            // 1. Uruchomienie przeglądarki
             var browser = await Puppeteer.LaunchAsync(new LaunchOptions
             {
                 Headless = true,
@@ -79,35 +82,82 @@ public class HomeController : Controller
             using var page = await browser.NewPageAsync();
             await page.GoToAsync(url, WaitUntilNavigation.Networkidle0);
 
-            // 1️⃣ Wczytaj oba skrypty
+            // 2. Załadowanie axe-core
             var axeScript = await System.IO.File.ReadAllTextAsync("wwwroot/js/axe.min.js");
             var axeLocale = await System.IO.File.ReadAllTextAsync("wwwroot/js/axe-locale-pl.js");
 
-            // 2️⃣ Załaduj axe-core do strony
             await page.EvaluateExpressionAsync(axeScript);
-
-            // 3️⃣ Wstrzyknij konfigurację języka PL (plik JSON → obiekt JS)
             await page.EvaluateExpressionAsync($"axe.configure({{ locale: {axeLocale} }});");
 
-            // 4️⃣ Uruchom test z polską lokalizacją
+            // 3. Uruchomienie testów
             var resultsJson = await page.EvaluateFunctionAsync<string>("async () => JSON.stringify(await axe.run())");
 
-            // 5️⃣ Odczytaj wyniki
-            var doc = JsonDocument.Parse(resultsJson);
-            var violationsJson = doc.RootElement.GetProperty("violations").GetRawText();
-
-            var result = JsonSerializer.Deserialize<List<AxeViolation>>(violationsJson, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-
             await browser.CloseAsync();
-            return View("Index", result);
+
+            // 4. Deserializacja JSON → AxeResult
+            var axeResult = JsonSerializer.Deserialize<AxeResult>(resultsJson);
+
+            // 5. Zapis do bazy danych
+            var scan = new ScanModel
+            {
+                Url = url,
+                FullResultJson = resultsJson,
+                UserId = 1 // TODO: zmień na prawdziwego zalogowanego użytkownika
+            };
+
+            _context.Scan.Add(scan);
+            await _context.SaveChangesAsync();
+
+            // 6. Zapis błędów
+            foreach (var v in axeResult.Violations)
+            {
+                foreach (var node in v.Nodes)
+                {
+                    var violation = new ViolationModel
+                    {
+                        ScanId = scan.ScanId,
+                        RuleId = v.Id,
+                        Impact = v.Impact,
+                        Description = v.Description,
+                        Help = v.HelpUrl,
+                        Selector = string.Join(", ", node.Target),
+                        Html = node.Html
+                    };
+
+                    _context.Vialations.Add(violation);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            // 7. Przekierowanie do wyników
+            return RedirectToAction("ScanDetails", new { id = scan.ScanId });
         }
         catch (Exception ex)
         {
             ViewBag.Error = ex.Message;
             return View("Index");
         }
+    }
+
+    // *************** WIDOK KONKRETNEGO SKANU *********************
+
+    public IActionResult ScanDetails(int id)
+    {
+        using InzynierkaContext _context = new InzynierkaContext();
+        var scan = _context.Scan
+            .Where(s => s.ScanId == id)
+            .Select(s => new ScanResultViewModel
+            {
+                Url = s.Url,
+                Date = s.ScanDate,
+                Violations = s.Violations.ToList()
+            })
+            .FirstOrDefault();
+
+        if (scan == null)
+            return NotFound();
+
+        return View(scan);
     }
 }

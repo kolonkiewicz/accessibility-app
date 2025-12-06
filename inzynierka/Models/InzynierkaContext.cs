@@ -11,6 +11,8 @@ namespace inzynierka.Models
 
         public DbSet<ScanModel> Scan { get; set; }
 
+        public DbSet<FixSuggestion> FixSuggestions { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite($"Data source=inzynierka.sqlite");
