@@ -39,5 +39,20 @@ else
             }
         </tbody>
     </table>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <a class="btn btn-outline-primary btn-lg mb-3"
+           asp-controller="Reports"
+           asp-action="Declaration"
+           asp-route-id="@Model.ScanId">
+                Generuj wstępną deklarację dostępności
+            </a>
+            <form asp-controller="Home" asp-action="GoToReports" class="text-center mb-3">
+                <button type="submit" class="btn btn-outline-primary btn-lg">Wróć</button>
+            </form>
+        </div>
+    </div>
 
 }
+
+

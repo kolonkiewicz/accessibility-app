@@ -15,7 +15,7 @@ namespace inzynierka.Controllers
         }
 
         [HttpGet]
-        public IActionResult ResetPassword()
+        public IActionResult Index()
         {
             return View();
         }
@@ -30,7 +30,7 @@ namespace inzynierka.Controllers
             if (user == null)
             {
                 TempData["DangerMessage"] = "Nie znaleziono użytkownika o podanym adresie email.";
-                return View();
+                return View("Index");
             }
 
             // 🔥 generujemy nowe losowe hasło

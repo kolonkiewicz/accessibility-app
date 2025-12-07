@@ -21,22 +21,22 @@ public class HomeController : Controller
 
     public IActionResult GoToLogin()
     {
-        return RedirectToAction("Login", "Login");
+        return RedirectToAction("Index", "Login");
     }
 
     public IActionResult GoToResetPassword()
     {
-        return RedirectToAction("ResetPassword", "ResetPassword");
+        return RedirectToAction("Index", "ResetPassword");
     }
 
     public IActionResult GoToRegister()
     {
-        return RedirectToAction("Register", "Register");
+        return RedirectToAction("Index", "Register");
     }
 
     public IActionResult GoToAccount()
     {
-        return RedirectToAction("Account", "Account");
+        return RedirectToAction("Index", "Account");
     }
 
     public IActionResult GoToChangePassword()
@@ -44,21 +44,15 @@ public class HomeController : Controller
         return RedirectToAction("EditPassword", "Account");
     }
 
-    public IActionResult GoToFile()
+    public IActionResult GoToReports()
     {
-        return RedirectToAction("File", "File");
+        return RedirectToAction("Index", "Reports");
     }
 
     public IActionResult GoToDashboard()
     {
         return RedirectToAction("Dashboard", "Dashboard");
     }
-
-    public IActionResult GoToAddFile()
-    {
-        return RedirectToAction("FileAdd", "File");
-    }
-
 
     [HttpPost]
     public async Task<IActionResult> Scan(string url)
@@ -154,6 +148,7 @@ public class HomeController : Controller
             .Where(s => s.ScanId == id)
             .Select(s => new ScanResultViewModel
             {
+                ScanId = s.ScanId,
                 Url = s.Url,
                 Date = s.ScanDate,
                 Violations = s.Violations

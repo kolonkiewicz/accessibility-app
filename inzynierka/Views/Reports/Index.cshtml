@@ -1,0 +1,39 @@
+﻿@model IEnumerable<inzynierka.Models.ViewModels.ReportListItemViewModel>
+
+<h2>Twoje raporty</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info mt-3">Brak raportów dla tego użytkownika.</div>
+}
+else
+{
+    <table class="table mt-3">
+        <thead>
+            <tr>
+                <th>URL</th>
+                <th>Data skanu</th>
+                <th>Liczba błędów</th>
+                <th>Akcje</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var report in Model)
+            {
+                <tr>
+                    <td>@report.Url</td>
+                    <td>@report.ScanDate</td>
+                    <td>@report.ErrorCount</td>
+                    <td>
+                        <a class="btn btn-primary btn-sm"
+                   asp-controller="Home"
+                   asp-action="ScanDetails"
+                   asp-route-id="@report.ScanId">
+                            Szczegóły
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

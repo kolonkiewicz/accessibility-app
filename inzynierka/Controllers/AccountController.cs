@@ -7,7 +7,7 @@ namespace inzynierka.Controllers
 {
     public class AccountController : Controller
     {
-        public IActionResult Account()
+        public IActionResult Index()
         {
             using InzynierkaContext cloudContext = new InzynierkaContext();
             var sessionIdUser = HttpContext.Session.GetString("SessionIdUser");

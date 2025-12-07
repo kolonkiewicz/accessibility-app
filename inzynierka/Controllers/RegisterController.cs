@@ -14,7 +14,7 @@ namespace inzynierka.Controllers
         }
 
         [HttpGet]
-        public IActionResult Register()
+        public IActionResult Index()
         {
             return View();
         }
@@ -64,27 +64,27 @@ namespace inzynierka.Controllers
                         catch (Exception)
                         {
                             TempData["DangerMessage"] = "Coś poszło nie tak";
-                            return View("Register", user);
+                            return View("Index", user);
                         }
                     }
                     else
                     {
                         TempData["DangerMessage"] = "Uzupełnij dane";
-                        return View("Register", user);
+                        return View("Index", user);
                     }
                 }
                 else
                 {
                     TempData["DangerMessage"] = "Wprowadź poprawne dane!";
                     ModelState.AddModelError("Username", "Podany username już istnieje");
-                    return View("Register", user);
+                    return View("Index", user);
                 }
             }
             else
             {
                 TempData["DangerMessage"] = "Wprowadź poprawne dane!";
                 ModelState.AddModelError("Email", "Email już istnieje");
-                return View("Register", user);
+                return View("Index", user);
             }
         }
 

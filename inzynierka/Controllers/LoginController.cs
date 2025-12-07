@@ -1,20 +1,19 @@
 ﻿using inzynierka.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NuGet.Protocol.Plugins;
 
 namespace inzynierka.Controllers
 {
     public class LoginController : Controller
     {
         [HttpGet]
-        public IActionResult Login()
+        public IActionResult Index()
         {
             return View();
         }
 
         [HttpPost]
-        public ActionResult SubmitLogin(UserModel user)
+        public IActionResult SubmitLogin(UserModel user)
         {
             using InzynierkaContext cloudContext = new InzynierkaContext();
 
@@ -24,31 +23,28 @@ namespace inzynierka.Controllers
             {
                 TempData["DangerMessage"] = "Wprowadź poprawne dane!";
                 ModelState.AddModelError("Username", "Podaj poprawny login");
-                return View("Login");
+                return View("Index");   
             }
 
-            if (!existinguser.EmailConfirmed == true)
+            if (!existinguser.EmailConfirmed)
             {
                 TempData["DangerMessage"] = "Musisz potwierdzić adres e-mail, zanim się zalogujesz.";
                 ModelState.AddModelError("Username", "Konto nieaktywne – sprawdź skrzynkę pocztową.");
-                return View("Login");
+                return View("Index");   
             }
 
             if (existinguser.Password != user.Password)
             {
                 ModelState.AddModelError("Password", "Podaj poprawne hasło");
                 TempData["DangerMessage"] = "Wprowadź poprawne dane!";
-                return View("Login");
+                return View("Index");   
             }
 
             HttpContext.Session.SetString("SessionRole", existinguser.Role);
             HttpContext.Session.SetString("SessionIdUser", existinguser.UserId.ToString());
 
             TempData["SuccessMessage"] = "Logowanie zakończone sukcesem!";
-
-            return RedirectToAction("GoToAccount", "Home");
+            return RedirectToAction("Index", "Account");
         }
-
-
     }
 }

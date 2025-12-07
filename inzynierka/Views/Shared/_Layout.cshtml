@@ -32,7 +32,7 @@
                                     <a class="nav-link text-dark " asp-area="" asp-controller="Allraports" asp-action="">Wszystkie Raporty</a>
                                 </li>
                                 <li class="nav-item ">
-                                    <a class="nav-link text-dark " asp-area="" asp-controller="Login" asp-action="Login">Zaloguj się</a>
+                                    <a class="nav-link text-dark " asp-area="" asp-controller="Login" asp-action="Index">Zaloguj się</a>
                                 </li>
                                 
                             }
@@ -42,13 +42,10 @@
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Wykonaj test</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="GoToFile">Twoje Raporty</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Reports" asp-action="Index">Twoje Raporty</a>
                                 </li>
                                 <li class="nav-item ">
-                                    <a class="nav-link text-dark " asp-area="" asp-controller="Login" asp-action="">Wszystkie Raporty</a>
-                                </li>
-                                <li class="nav-item ">
-                                    <a class="nav-link text-dark " asp-area="" asp-controller="Account" asp-action="Account">Konto</a>
+                                    <a class="nav-link text-dark " asp-area="" asp-controller="Account" asp-action="Index">Konto</a>
                                 </li>
                             }
                             else if (Context.Session.GetString("SessionIdUser") != null && Context.Session.GetString("SessionRole") == "admin")
