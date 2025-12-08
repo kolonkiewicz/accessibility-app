@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="~/cloud2.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 
     <div id="section">
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white mb-3">
@@ -19,47 +19,60 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        @{
+                <div class="navbar-collapse collapse d-sm-inline-flex">
 
-                            if (Context.Session.GetString("SessionIdUser") == null)
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                                </li>
-                                <li class="nav-item ">
-                                    <a class="nav-link text-dark " asp-area="" asp-controller="Allraports" asp-action="">Wszystkie Raporty</a>
-                                </li>
-                                <li class="nav-item ">
-                                    <a class="nav-link text-dark " asp-area="" asp-controller="Login" asp-action="Index">Zaloguj się</a>
-                                </li>
-                                
-                            }
-                            else if (Context.Session.GetString("SessionIdUser") != null && Context.Session.GetString("SessionRole") == "user")
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Wykonaj test</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Reports" asp-action="Index">Twoje Raporty</a>
-                                </li>
-                                <li class="nav-item ">
-                                    <a class="nav-link text-dark " asp-area="" asp-controller="Account" asp-action="Index">Konto</a>
-                                </li>
-                            }
-                            else if (Context.Session.GetString("SessionIdUser") != null && Context.Session.GetString("SessionRole") == "admin")
-                            {
-                                <li class="nav-item ">
-                                    <a class="nav-link text-dark " asp-area="" asp-controller="Home" asp-action="GoToDashboard">Dashboard</a>
-                                </li>
-                                <li class="nav-item ">
-                                    <a class="nav-link text-dark " asp-area="" asp-controller="Account" asp-action="Account">Konto</a>
-                                </li>
-                            }
+                    <!-- LEWE MENU -->
+                    <ul class="navbar-nav me-auto">
+                        @if (Context.Session.GetString("SessionIdUser") == null)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                        }
+                        else if (Context.Session.GetString("SessionIdUser") != null && Context.Session.GetString("SessionRole") == "user")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Wykonaj test</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Reports" asp-action="Index">Twoje Raporty</a>
+                            </li>
+                        }
+                        else if (Context.Session.GetString("SessionIdUser") != null && Context.Session.GetString("SessionRole") == "admin")
+                        {
+                            <li class="nav-item ">
+                                <a class="nav-link text-dark " asp-area="" asp-controller="Home" asp-action="GoToDashboard">Dashboard</a>
+                            </li>
                         }
                     </ul>
+
+                    <!-- PRAWE MENU (LOGIN / KONTO / WYLOGUJ) -->
+                    <ul class="navbar-nav ms-auto">
+                        @if (Context.Session.GetString("SessionIdUser") == null)
+                        {
+                            <li class="nav-item ">
+                                <a class="nav-link text-dark " asp-area="" asp-controller="Login" asp-action="Index">Zaloguj się</a>
+                            </li>
+                        }
+                        else if (Context.Session.GetString("SessionIdUser") != null && Context.Session.GetString("SessionRole") == "user")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Index">Konto</a>
+                            </li>
+                            <li class="nav-item ">
+                                <a class="nav-link text-dark " asp-area="" asp-controller="Account" asp-action="Logout">Wyloguj się</a>
+                            </li>
+                        }
+                        else if (Context.Session.GetString("SessionIdUser") != null && Context.Session.GetString("SessionRole") == "admin")
+                        {
+                            <li class="nav-item ">
+                                <a class="nav-link text-dark " asp-area="" asp-controller="Account" asp-action="Account">Konto</a>
+                            </li>
+                        }
+                    </ul>
+
                 </div>
+
             </div>
         </nav>
     </div>
@@ -135,9 +148,9 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer text-muted mt-auto">
         <div>
-            &copy; 2025 - ADiS - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2025 - ADiS</a>
         </div>
     </footer>
 

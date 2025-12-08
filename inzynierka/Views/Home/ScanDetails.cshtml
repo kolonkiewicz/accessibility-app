@@ -1,58 +1,84 @@
 ﻿@model inzynierka.Models.ViewModels.ScanResultViewModel
 
-<h2>Wyniki skanu: @Model.Url</h2>
-<p>Data skanu: @Model.Date</p>
+<div class="container my-5">
 
-@if (!Model.Violations.Any())
-{
-    <p style="color: green;">Brak błędów 🟢</p>
-}
-else
-{
-    <h3>Znalezione błędy:</h3>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Rule</th>
-                <th>Impact</th>
-                <th>Opis</th>
-                <th>Selector</th>
-                <th>HTML</th>
-                <th>Pomoc</th>
-                <th>Rekomendacja</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.Violations)
-            {
-                <tr>
-                    <td>@item.Violation.RuleId</td>
-                    <td>@item.Violation.Impact</td>
-                    <td>@item.Violation.Description</td>
-                    <td>@item.Violation.Selector</td>
-                    <td><code>@item.Violation.Html</code></td>
-                    <td><a href="@item.Violation.Help" target="_blank">Wskazówki</a></td>
-                    <td style="color: darkgreen; font-weight: bold;">
-                        @item.Suggestion
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <a class="btn btn-outline-primary btn-lg mb-3"
+    <div class="text-center mb-4">
+        <h1 class="fw-bold">Wyniki skanu</h1>
+        <p class="lead mb-1">Adres strony: <b>@Model.Url</b></p>
+        <p class="text-muted">Data skanu: @Model.Date.ToString("yyyy-MM-dd HH:mm")</p>
+    </div>
+
+    @if (!Model.Violations.Any())
+    {
+        <div class="alert alert-success text-center py-4 fs-5 fw-bold shadow-sm">
+            Brak błędów – strona spełnia wymagania WCAG 2.1 🟢
+        </div>
+    }
+    else
+    {
+        <h3 class="mb-3 text-center">Znalezione błędy dostępności</h3>
+
+        <div class="table-responsive shadow-sm rounded">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr class="text-center">
+                        <th>Reguła</th>
+                        <th>Ważność</th>
+                        <th>Opis</th>
+                        <th>Element</th>
+                        <th>Kod HTML</th>
+                        <th>Pomoc</th>
+                        <th>Rekomendacja</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Violations)
+                    {
+                        <tr>
+                            <td><b>@item.Violation.RuleId</b></td>
+
+                            <td class="text-center">
+                                <span class="badge
+                                    @(item.Violation.Impact == "critical" ? "bg-danger" :
+                                      item.Violation.Impact == "serious" ? "bg-warning" :
+                                      item.Violation.Impact == "moderate" ? "bg-info" : "bg-secondary")">
+                                    @item.Violation.Impact
+                                </span>
+                            </td>
+
+                            <td>@item.Violation.Description</td>
+
+                            <td><code>@item.Violation.Selector</code></td>
+
+                            <td>
+                                <pre class="small bg-light p-2 rounded" style="white-space: pre-wrap;">@item.Violation.Html</pre>
+                            </td>
+
+                            <td class="text-center">
+                                <a href="@item.Violation.Help" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    Wskazówki
+                                </a>
+                            </td>
+
+                            <td class="text-success fw-bold">@item.Suggestion</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-center mt-5">
+            <a class="btn btn-primary btn-lg px-4 me-3"
            asp-controller="Reports"
            asp-action="Declaration"
            asp-route-id="@Model.ScanId">
                 Generuj wstępną deklarację dostępności
             </a>
-            <form asp-controller="Home" asp-action="GoToReports" class="text-center mb-3">
-                <button type="submit" class="btn btn-outline-primary btn-lg">Wróć</button>
-            </form>
+
+            <a asp-controller="Home" asp-action="GoToReports"
+               class="btn btn-outline-secondary btn-lg px-4">
+                Wróć
+            </a>
         </div>
-    </div>
-
-}
-
-
+    }
+</div>

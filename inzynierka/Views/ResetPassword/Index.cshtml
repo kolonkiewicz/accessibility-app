@@ -4,30 +4,73 @@
     ViewData["Title"] = "ResetPassword";
 }
 
-<div>
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <form asp-controller="ResetPassword" asp-action="ResetPassword" method="post" class="mt-5 d-flex flex-column justify-content-start align-items-center">
-                <h1 class="display-4 text-center mb-3">Przypomnienie hasła</h1>
-                <div class="mb-3 w-100">
-                    <div class="position-relative">
-                        <i class="fa-solid fa-envelope-open faicon"></i>
-                        <input type="email" class="form-control inputawesome" name="Email" placeholder="e-mail">
-                    </div>
-                    <span asp-validation-for="Email" class="text-danger"></span>
+<div class="reset-container d-flex justify-content-center align-items-center">
+    <div class="reset-box p-4 shadow-sm rounded">
+
+        <h1 class="text-center mb-4 fw-bold">Przypomnienie hasła</h1>
+
+        
+        <form asp-controller="ResetPassword" asp-action="ResetPassword" method="post">
+
+           
+            <div class="mb-4">
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-envelope input-icon"></i>
+                    <input type="email" class="form-control ps-5" name="Email" placeholder="Adres e-mail" required />
                 </div>
-                <div class="text-center mb-3">
-                    <button type="submit" class="btn btn-primary btn-lg">Zresetuj hasło</button>
-                </div>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            
+            <div class="text-center mb-4">
+                <button type="submit" class="btn btn-primary btn-lg w-100 py-2">Zresetuj hasło</button>
+            </div>
+
+        </form>
+
+       
+        <div class="text-center">
+            <form asp-controller="Home" asp-action="GoToLogin">
+                <button type="submit" class="btn btn-outline-primary w-100 py-2">
+                    Wróć do logowania
+                </button>
             </form>
         </div>
-    </div>
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <form asp-controller="Home" asp-action="GoToLogin" class="text-center mb-3">
-                <button type="submit" class="btn btn-outline-primary btn-lg">Wróć do logowania</button>
-            </form>
-        </div>
+
     </div>
 </div>
 
+
+<style>
+    .reset-container {
+        min-height: 75vh;
+    }
+
+    .reset-box {
+        max-width: 420px;
+        width: 100%;
+        background: #fff;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        top: 50%;
+        left: 12px;
+        transform: translateY(-50%);
+        color: #555;
+        font-size: 17px;
+    }
+
+    .form-control {
+        height: 48px;
+        font-size: 16px;
+    }
+
+    .btn-lg {
+        font-size: 17px;
+    }
+</style>

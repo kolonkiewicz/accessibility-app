@@ -1,12 +1,108 @@
 ﻿@{
-    ViewData["Title"] = "Sprawdź dostępność strony";
+    ViewData["Title"] = "Strona Główna";
+    var isLogged = Context.Session.GetString("SessionIdUser") != null;
 }
 
 <div class="container mt-5">
-    <h1 class="mb-4 text-center">Analiza dostępności strony (WCAG 2.1)</h1>
 
-    <form asp-action="Scan" method="post" class="d-flex justify-content-center">
-        <input type="text" name="url" class="form-control w-50" placeholder="https://example.com" required />
-        <button type="submit" class="btn btn-success ms-2">Skanuj</button>
-    </form>
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold">Automatyczna analiza dostępności WCAG 2.1</h1>
+        <p class="lead mt-3">
+            Sprawdź zgodność swojej strony internetowej z ustawą o dostępności cyfrowej oraz WCAG 2.1.
+            Nasz system automatycznie analizuje serwis, wykrywa błędy, sugeruje poprawki
+            i generuje wstępną deklarację dostępności.
+        </p>
+
+        <form method="post" asp-controller="Home" asp-action="Scan" class="mt-4 d-flex justify-content-center">
+            <input type="text" name="url" class="form-control w-50" placeholder="https://example.com" required />
+
+            @if (isLogged)
+            {
+                <button type="submit" class="btn btn-primary btn-lg ms-2">
+                    Rozpocznij analizę
+                </button>
+            }
+            else
+            {
+                <a asp-controller="Login" asp-action="Index"
+                   class="btn btn-primary btn-lg ms-2">
+                    Zaloguj się, aby rozpocząć
+                </a>
+            }
+        </form>
+    </div>
+
+    <hr />
+
+    <div class="row text-center mt-5">
+        <div class="col-md-4 mb-4">
+            <i class="fa-solid fa-magnifying-glass-chart fa-3x mb-3 text-primary"></i>
+            <h4>Automatyczna analiza</h4>
+            <p>
+                System wykonuje testy dostępności za pomocą <b>axe-core</b> oraz <b>PuppeteerSharp</b>
+                i tworzy szczegółowy raport błędów WCAG 2.1.
+            </p>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <i class="fa-solid fa-lightbulb fa-3x mb-3 text-primary"></i>
+            <h4>Sugestie poprawek</h4>
+            <p>
+                Dla najczęstszych problemów dostępności otrzymasz jasne i praktyczne zalecenia,
+                które pomogą szybko naprawić błędy.
+            </p>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <i class="fa-solid fa-file fa-3x mb-3 text-primary"></i>
+            <h4>Deklaracja dostępności</h4>
+            <p>
+                System generuje automatyczną, wstępną deklarację dostępności zgodną z wymogami ustawy.
+            </p>
+        </div>
+    </div>
+
+    <hr />
+
+    <div class="mt-5">
+        <h2 class="text-center mb-4">Jak to działa?</h2>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <ol class="list-group list-group-numbered">
+                    <li class="list-group-item">
+                        Wprowadź adres strony, którą chcesz przeanalizować.
+                    </li>
+                    <li class="list-group-item">
+                        System uruchomi automat testujący i wykona analizę zgodną z WCAG 2.1.
+                    </li>
+                    <li class="list-group-item">
+                        Otrzymasz raport wszystkich wykrytych błędów dostępności.
+                    </li>
+                    <li class="list-group-item">
+                        Sprawdzisz szczegółowe opisy błędów oraz proponowane poprawki.
+                    </li>
+                    <li class="list-group-item">
+                        Wygenerujesz deklarację dostępności w formacie PDF.
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <hr />
+
+    <div class="mt-5 text-center">
+        <h2>Dlaczego dostępność jest ważna?</h2>
+        <p class="mt-3">
+            Dostępność cyfrowa to obowiązek wynikający z ustawy z dnia 4 kwietnia 2019 r.
+            Brak zgodności może prowadzić do wykluczenia osób z niepełnosprawnościami oraz
+            skutkować konsekwencjami prawnymi. Nasza aplikacja pomaga spełnić wymagania WCAG 2.1
+            w szybki i przejrzysty sposób.
+        </p>
+    </div>
+
+    <br />
+    <br />
+    
 </div>

@@ -1,78 +1,118 @@
 ﻿@model UserModel
 
 @{
-    ViewData["Title"] = "Account Details";
+    ViewData["Title"] = "Twoje Konto";
 
+    // generowanie pseudo-hasła
     string randompass = "";
-
-    Random rand = new Random();
-
-    int randomnumber = rand.Next(4, 11);
-
-    for (int i = 0; i < randomnumber; i++)
-    {
-        randompass += "*";
-    }
+    Random r = new Random();
+    int len = r.Next(6, 12);
+    randompass = new string('*', len);
 }
 
-<div>
-    <div class="row justify-content-center">
-        <h1 class="display-4 text-center mb-3">Twoje Konto</h1>
-        <div class="d-flex justify-content-between">
+<div class="d-flex justify-content-center mt-5">
+    <div class="account-box p-4 shadow-sm rounded">
 
-            <div class="d-flex flex-column w-50 ">
-                <div class="mb-3 ">
-                    <p class="h5">Login:</p>
-                    <div class="position-relative">
-                        <i class="fa-solid fa-user faicon"></i>
-                        <input asp-for="Username" type="text" readonly="readonly"  class="form-control inputawesome bg-white pe-none" name="" maxlength="20">
+        <h1 class="text-center mb-4 fw-bold">Twoje Konto</h1>
+
+        <div class="row">
+            <!-- LEWA KOLUMNA -->
+            <div class="col-md-6">
+
+                <!-- LOGIN -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Login:</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-user input-icon"></i>
+                        <input asp-for="Username" class="form-control ps-5 bg-light" readonly />
                     </div>
                 </div>
-                <div class="mb-3 ">
-                    <p class="h5">Adres e-mail:</p>
-                    <div class="position-relative">
-                        <i class="fa-solid fa-user faicon"></i>
-                        <input asp-for="Email" type="text" readonly="readonly"  class="form-control inputawesome bg-white pe-none" name="" axlength="20">
+
+                <!-- EMAIL -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Adres e-mail:</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-envelope input-icon"></i>
+                        <input asp-for="Email" class="form-control ps-5 bg-light" readonly />
                     </div>
                 </div>
-                <div class="mb-3 ">
-                    <p class="h5">Hasło:</p>
-                    <div class="position-relative">
-                        <i class="fa-solid fa-user faicon"></i>
-                        <input asp-for="@randompass" type="text" readonly="readonly" class="form-control inputawesome bg-white pe-none" name="" maxlength="20">
+
+                <!-- HASLO -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Hasło:</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-lock input-icon"></i>
+                        <input value="@randompass" class="form-control ps-5 bg-light" readonly />
                     </div>
                 </div>
+
             </div>
-            <div class="d-flex flex-column w-50 ms-5">
-                <div class="mb-3 ">
-                    <p class="h5">Imie:</p>
-                    <div class="position-relative">
-                        <i class="fa-solid fa-user faicon"></i>
-                        <input asp-for="Name" type="text" readonly="readonly" class="form-control inputawesome bg-white pe-none" name="" maxlength="20">
+
+            <!-- PRAWA KOLUMNA -->
+            <div class="col-md-6">
+
+                <!-- IMIE -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Imię:</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-user input-icon"></i>
+                        <input asp-for="Name" class="form-control ps-5 bg-light" readonly />
                     </div>
                 </div>
-                <div class="mb-3 ">
-                    <p class="h5">Nazwisko:</p>
-                    <div class="position-relative">
-                        <i class="fa-solid fa-user faicon"></i>
-                        <input asp-for="Surname" type="text" readonly="readonly" class="form-control inputawesome bg-white pe-none" name="" maxlength="20">
+
+                <!-- NAZWISKO -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Nazwisko:</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-user input-icon"></i>
+                        <input asp-for="Surname" class="form-control ps-5 bg-light" readonly />
                     </div>
                 </div>
-                <div class=" mb-3 ">
-                    <p class="h5 invisible">645</p>
+
+                <!-- ZMIANA HASLA -->
+                <div class="mt-4">
                     <form asp-controller="Home" asp-action="GoToChangePassword">
-                        <button class="btn btn-primary ">Zmień dane</button>
+                        <button type="submit" class="btn btn-primary w-100 py-2">Zmień hasło</button>
                     </form>
                 </div>
+
             </div>
         </div>
-    </div>
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <form asp-controller="Account" asp-action="Logout" class="text-center">
-                <button type="submit" class="btn btn-outline-primary btn-lg">Wyloguj się!</button>
+
+        <!-- WYLOGOWANIE -->
+        <div class="mt-4 text-center">
+            <form asp-controller="Account" asp-action="Logout">
+                <button type="submit" class="btn btn-outline-primary btn-lg w-100">
+                    Wyloguj się
+                </button>
             </form>
         </div>
 
     </div>
 </div>
+
+<style>
+    .account-box {
+        width: 100%;
+        max-width: 700px;
+        background: #fff;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        top: 50%;
+        left: 12px;
+        transform: translateY(-50%);
+        color: #555;
+        font-size: 17px;
+    }
+
+    .form-control {
+        height: 48px;
+        font-size: 16px;
+    }
+</style>
