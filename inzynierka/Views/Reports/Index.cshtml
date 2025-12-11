@@ -44,7 +44,13 @@
                                 </span>
                             </td>
 
-                            <td class="text-center">
+                            <td class=" ">
+                                <a class="btn btn-outline-success btn-sm ms-2"
+                           asp-controller="Reports"
+                           asp-action="Declaration"
+                           asp-route-id="@report.ScanId">
+                                    Deklaracja
+                                </a>
                                 <a class="btn btn-primary btn-sm px-3"
                            asp-controller="Home"
                            asp-action="ScanDetails"
