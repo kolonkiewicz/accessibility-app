@@ -13,7 +13,7 @@
             i generuje wstępną deklarację dostępności.
         </p>
 
-        <form method="post" asp-controller="Home" asp-action="Scan" class="mt-4 d-flex justify-content-center">
+        <form id="scanForm" method="post" asp-controller="Home" asp-action="Scan" class="mt-4 d-flex justify-content-center">
             <input type="text" name="url" class="form-control w-50" placeholder="https://example.com" required />
 
             @if (isLogged)
@@ -30,7 +30,13 @@
                 </a>
             }
         </form>
+        <div id="loader" class="loader-overlay justify-content-center" style="display:none;">
+            <div class="spinner"></div>
+            <p>Trwa analiza strony internetowej...</p>
+        </div>
     </div>
+    
+
 
     <hr />
 
@@ -106,3 +112,40 @@
     <br />
     
 </div>
+<script>
+    document.getElementById("scanForm")?.addEventListener("submit", function () {
+        document.getElementById("loader").style.display = "flex";
+    });
+</script>
+
+<style>
+    .loader-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(255, 255, 255, 0.9);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 99999;
+    }
+
+    .spinner {
+        width: 60px;
+        height: 60px;
+        border: 6px solid #ddd;
+        border-top: 6px solid #0d6efd;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 15px;
+    }
+
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+

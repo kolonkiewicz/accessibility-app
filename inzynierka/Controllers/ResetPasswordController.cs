@@ -1,6 +1,7 @@
 ﻿using inzynierka.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Identity;
 
 namespace inzynierka.Controllers
 {
@@ -33,14 +34,13 @@ namespace inzynierka.Controllers
                 return View("Index");
             }
 
-            // 🔥 generujemy nowe losowe hasło
             string newPassword = Guid.NewGuid().ToString().Substring(0, 8);
+            
+            var passwordHasher = new PasswordHasher<UserModel>();
+            user.Password = passwordHasher.HashPassword(user, newPassword);
 
-
-            user.Password = newPassword;
             db.SaveChanges();
 
-            // 🔥 wyślij maila (używasz tego samego co w potwierdzaniu)
             _emailService.SendEmailAsync(
                 Email,
                 "Przypomnienie hasła",

@@ -64,7 +64,7 @@ public class HomeController : Controller
 
         if (string.IsNullOrWhiteSpace(url))
         {
-            ViewBag.Error = "Podaj poprawny adres URL.";
+            TempData["DangerMessage"] = "Podaj poprawny adres URL.";
             return View("Index");
         }
 
@@ -131,9 +131,9 @@ public class HomeController : Controller
             // 7. Przekierowanie do wyników
             return RedirectToAction("ScanDetails", new { id = scan.ScanId });
         }
-        catch (Exception ex)
+        catch 
         {
-            ViewBag.Error = ex.Message;
+            TempData["DangerMessage"] = "Podaj poprawny adres URL.";
             return View("Index");
         }
     }

@@ -1,4 +1,5 @@
 ﻿using inzynierka.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.Design.Serialization;
@@ -48,8 +49,10 @@ namespace inzynierka.Controllers
                 {
                     int sessionIdUserToInt = int.Parse(sessionIdUser);
                     var user1 = cloudContext.Users.FirstOrDefault(u => u.UserId == sessionIdUserToInt);
+                    
+                    var passwordHasher = new PasswordHasher<UserModel>();
+                    user1.Password = passwordHasher.HashPassword(user1, user.Password);
 
-                    user1.Password = user.Password;
 
                     cloudContext.SaveChanges();
                     TempData["SuccessMessage"] = "Poprawnie zmieniono hasło!";

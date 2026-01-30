@@ -1,6 +1,7 @@
 ﻿using inzynierka.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 
 namespace inzynierka.Controllers
 {
@@ -33,7 +34,14 @@ namespace inzynierka.Controllers
                 return View("Index");   
             }
 
-            if (existinguser.Password != user.Password)
+            var passwordHasher = new PasswordHasher<UserModel>();
+            var veryficationResult = passwordHasher.VerifyHashedPassword(
+                existinguser,
+                existinguser.Password,
+                user.Password
+            );
+
+            if (veryficationResult == PasswordVerificationResult.Failed)
             {
                 ModelState.AddModelError("Password", "Podaj poprawne hasło");
                 TempData["DangerMessage"] = "Wprowadź poprawne dane!";

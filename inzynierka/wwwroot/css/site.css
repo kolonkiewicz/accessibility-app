@@ -18,16 +18,13 @@ body {
     padding: 3px 10%;
 }
 
-
-
-/* Styl dla ikony u¿ytkownika */
 .faicon {
     position: absolute;
     top: 50%;
-    left: 10px; /* Dostosuj wartoœæ w zale¿noœci od preferencji */
+    left: 10px; 
     transform: translateY(-50%);
-    color: black; /* Kolor ikony */
-    pointer-events: none; /* Zapobiega aktywacji ikony przez klikniêcie */
+    color: black; 
+    pointer-events: none; 
 }
 
 .inputawesome{

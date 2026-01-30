@@ -1,6 +1,7 @@
 ﻿using inzynierka.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Identity;
 
 namespace inzynierka.Controllers
 {
@@ -37,7 +38,9 @@ namespace inzynierka.Controllers
                     {
                         try
                         {
-                            // 🔥 GENEROWANIE TOKENU 🔥
+                            var passwordHasher = new PasswordHasher<UserModel>();
+                            user.Password = passwordHasher.HashPassword(user, user.Password);
+
                             user.VerificationToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
                             user.VerificationTokenExpires = DateTime.UtcNow.AddHours(24);
                             user.EmailConfirmed = false;
@@ -45,7 +48,7 @@ namespace inzynierka.Controllers
                             inzynierkaContext.Users.Add(user);
                             inzynierkaContext.SaveChanges();
 
-                            // 🔥 WYŚLIJ MAILA 🔥
+                            //  WYŚLIJ MAILA 
                             string link = Url.Action(
                                 "VerifyEmail",
                                 "Register",
@@ -88,7 +91,6 @@ namespace inzynierka.Controllers
             }
         }
 
-        // 🔥 AKCJA POTWIERDZAJĄCA EMAIL 🔥
         public IActionResult VerifyEmail(string token)
         {
             using InzynierkaContext inzynierkaContext = new InzynierkaContext();
