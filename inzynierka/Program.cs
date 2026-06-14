@@ -7,7 +7,7 @@ namespace inzynierka
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddSingleton<EmailService>();
-            // Add services to the container.
+            
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddDistributedMemoryCache();
@@ -21,7 +21,6 @@ namespace inzynierka
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");

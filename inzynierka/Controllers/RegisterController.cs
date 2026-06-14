@@ -48,7 +48,6 @@ namespace inzynierka.Controllers
                             inzynierkaContext.Users.Add(user);
                             inzynierkaContext.SaveChanges();
 
-                            //  WYŚLIJ MAILA 
                             string link = Url.Action(
                                 "VerifyEmail",
                                 "Register",
