@@ -8,10 +8,12 @@ namespace inzynierka.Controllers
     public class RegisterController : Controller
     {
         private readonly EmailService _emailService;
+        private readonly InzynierkaContext _context;
 
-        public RegisterController(EmailService emailService)
+        public RegisterController(EmailService emailService, InzynierkaContext context)
         {
             _emailService = emailService;
+            _context = context;
         }
 
         [HttpGet]
@@ -23,10 +25,9 @@ namespace inzynierka.Controllers
         [HttpPost]
         public ActionResult SubmitRegister(UserModel user)
         {
-            using InzynierkaContext inzynierkaContext = new InzynierkaContext();
 
-            var existinglogin = inzynierkaContext.Users.FirstOrDefault(u => u.Username == user.Username);
-            var existingemail = inzynierkaContext.Users.FirstOrDefault(u => u.Email == user.Email);
+            var existinglogin = _context.Users.FirstOrDefault(u => u.Username == user.Username);
+            var existingemail = _context.Users.FirstOrDefault(u => u.Email == user.Email);
 
             if (existingemail == null)
             {
@@ -45,8 +46,8 @@ namespace inzynierka.Controllers
                             user.VerificationTokenExpires = DateTime.UtcNow.AddHours(24);
                             user.EmailConfirmed = false;
 
-                            inzynierkaContext.Users.Add(user);
-                            inzynierkaContext.SaveChanges();
+                            _context.Users.Add(user);
+                            _context.SaveChanges();
 
                             string link = Url.Action(
                                 "VerifyEmail",
@@ -92,12 +93,10 @@ namespace inzynierka.Controllers
 
         public IActionResult VerifyEmail(string token)
         {
-            using InzynierkaContext inzynierkaContext = new InzynierkaContext();
-
             if (token == null)
                 return BadRequest("Niepoprawny token");
 
-            var user = inzynierkaContext.Users.FirstOrDefault(u => u.VerificationToken == token);
+            var user = _context.Users.FirstOrDefault(u => u.VerificationToken == token);
 
             if (user == null)
                 return BadRequest("Nieprawidłowy token");
@@ -109,7 +108,7 @@ namespace inzynierka.Controllers
             user.VerificationToken = null;
             user.VerificationTokenExpires = null;
 
-            inzynierkaContext.SaveChanges();
+            _context.SaveChanges();
 
             TempData["SuccessMessage"] = "Email potwierdzony! Możesz się zalogować.";
             return RedirectToAction("GoToLogin", "Home");

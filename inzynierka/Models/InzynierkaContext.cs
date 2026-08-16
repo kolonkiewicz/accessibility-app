@@ -13,9 +13,20 @@ namespace inzynierka.Models
 
         public DbSet<FixSuggestion> FixSuggestions { get; set; }
 
+        public InzynierkaContext()
+        {
+        }
+
+        public InzynierkaContext(DbContextOptions<InzynierkaContext> options)
+            : base(options)
+        {}
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite($"Data source=inzynierka.sqlite");
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlite($"Data source=inzynierka.sqlite");
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -1,3 +1,5 @@
+using inzynierka.Models;
+
 namespace inzynierka
 {
     public class Program
@@ -9,6 +11,8 @@ namespace inzynierka
             builder.Services.AddSingleton<EmailService>();
             
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddDbContext<InzynierkaContext>();
 
             builder.Services.AddDistributedMemoryCache();
 

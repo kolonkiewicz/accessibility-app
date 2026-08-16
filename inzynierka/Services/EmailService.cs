@@ -10,7 +10,7 @@ public class EmailService
         _config = config;
     }
 
-    public async Task SendEmailAsync(string to, string subject, string body)
+    public virtual async Task SendEmailAsync(string to, string subject, string body)
     {
         var email = new MailMessage();
         email.From = new MailAddress(_config["Email:From"]);

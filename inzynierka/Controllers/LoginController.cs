@@ -7,6 +7,13 @@ namespace inzynierka.Controllers
 {
     public class LoginController : Controller
     {
+        private readonly InzynierkaContext _context;
+
+        public LoginController(InzynierkaContext context)
+        {
+            _context = context;
+        }
+        
         [HttpGet]
         public IActionResult Index()
         {
@@ -16,9 +23,8 @@ namespace inzynierka.Controllers
         [HttpPost]
         public IActionResult SubmitLogin(UserModel user)
         {
-            using InzynierkaContext cloudContext = new InzynierkaContext();
 
-            var existinguser = cloudContext.Users.FirstOrDefault(u => u.Username == user.Username);
+            var existinguser = _context.Users.FirstOrDefault(u => u.Username == user.Username);
 
             if (existinguser == null)
             {
