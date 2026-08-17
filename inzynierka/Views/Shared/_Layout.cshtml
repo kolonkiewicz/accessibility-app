@@ -28,6 +28,9 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="AllScans">Wszystkie skany</a>
+                            </li>
                         }
                         else if (Context.Session.GetString("SessionIdUser") != null && Context.Session.GetString("SessionRole") == "user")
                         {
@@ -36,6 +39,9 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Reports" asp-action="Index">Twoje Raporty</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="AllScans">Wszystkie skany</a>
                             </li>
                         }
                         else if (Context.Session.GetString("SessionIdUser") != null && Context.Session.GetString("SessionRole") == "admin")

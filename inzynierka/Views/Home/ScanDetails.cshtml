@@ -1,79 +1,150 @@
-﻿@model inzynierka.Models.ViewModels.ScanResultViewModel
+﻿@model int
+
 
 <div class="container my-5">
 
     <div class="text-center mb-4">
         <h1 class="fw-bold">Wyniki skanu</h1>
-        <p class="lead mb-1">Adres strony: <b>@Model.Url</b></p>
-        <p class="text-muted">Data skanu: @Model.Date.ToString("yyyy-MM-dd HH:mm")</p>
+
+        <p class="lead mb-1">
+            Adres strony: <b id="scanUrl">Ładowanie...</b>
+        </p>
+
+        <p class="text-muted">
+            Data skanu: <span id="scanDate">Ładowanie...</span>
+        </p>
     </div>
 
-    @if (!Model.Violations.Any())
-    {
-        <div class="alert alert-success text-center py-4 fs-5 fw-bold shadow-sm">
-            Brak błędów – strona spełnia wymagania WCAG 2.1 🟢
+    <div id="scanContent">
+        <div class="text-center">
+            Ładowanie wyników skanu...
         </div>
-    }
-    else
-    {
-        <h3 class="mb-3 text-center">Znalezione błędy dostępności</h3>
+    </div>
 
-        <div class="table-responsive shadow-sm rounded">
-            <table class="table table-bordered table-hover align-middle">
-                <thead class="table-light">
-                    <tr class="text-center">
-                        <th>Reguła</th>
-                        <th>Ważność</th>
-                        <th>Opis</th>
-                        <th>Element</th>
-                        <th>Kod HTML</th>
-                        <th>Pomoc</th>
-                        <th>Rekomendacja</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.Violations)
-                    {
-                        <tr>
-                            <td><b>@item.Violation.RuleId</b></td>
-
-                            <td class="text-center">
-                                <span class="badge
-                                    @(item.Violation.Impact == "critical" ? "bg-danger" :
-                                      item.Violation.Impact == "serious" ? "bg-warning" :
-                                      item.Violation.Impact == "moderate" ? "bg-info" : "bg-secondary")">
-                                    @item.Violation.Impact
-                                </span>
-                            </td>
-
-                            <td>@item.Violation.Description</td>
-
-                            <td><code>@item.Violation.Selector</code></td>
-
-                            <td>
-                                <pre class="small bg-light p-2 rounded" style="white-space: pre-wrap;">@item.Violation.Html</pre>
-                            </td>
-
-                            <td class="text-center">
-                                <a href="@item.Violation.Help" target="_blank" class="btn btn-sm btn-outline-primary">
-                                    Wskazówki
-                                </a>
-                            </td>
-
-                            <td class="text-success fw-bold">@item.Suggestion</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-
-        <div class="text-center mt-5">
-
-            <a asp-controller="Home" asp-action="GoToReports"
-               class="btn btn-outline-secondary btn-lg px-4">
-                Wróć
-            </a>
-
-        </div>
-    }
 </div>
+
+<script>
+    const scanId = @Model;
+
+    fetch(`/api/AllScansApi/${scanId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Nie znaleziono skanu.");
+            }
+            return response.json();
+        })
+        .then(scan => {
+            // Dopasowanie nazw właściwości z JSON (date/scanDate)
+            const scanDateValue = scan.date || scan.scanDate;
+
+            document.getElementById("scanUrl").textContent = scan.url;
+            document.getElementById("scanDate").textContent = scanDateValue
+                ? new Date(scanDateValue).toLocaleString("sv-SE", { dateStyle: "short", timeStyle: "short" })
+                : "Brak danych";
+
+            const content = document.getElementById("scanContent");
+
+            if (!scan.violations || scan.violations.length === 0) {
+                content.innerHTML = `
+                    <div class="alert alert-success text-center py-4 fs-5 fw-bold shadow-sm">
+                        Brak błędów – strona spełnia wymagania WCAG 2.1 🟢
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <h3 class="mb-3 text-center">Znalezione błędy dostępności</h3>
+
+                <div class="table-responsive shadow-sm rounded">
+                    <table class="table table-bordered table-hover align-middle">
+                        <thead class="table-light">
+                            <tr class="text-center">
+                                <th>Reguła</th>
+                                <th>Ważność</th>
+                                <th>Opis</th>
+                                <th>Element</th>
+                                <th>Kod HTML</th>
+                                <th>Pomoc</th>
+                                <th>Rekomendacja</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            scan.violations.forEach(item => {
+                const violation = item.violation || item.Violation || item;
+                const impact = violation.impact || violation.Impact || "";
+
+                let badgeClass;
+                if (impact === "critical") badgeClass = "bg-danger";
+                else if (impact === "serious") badgeClass = "bg-warning";
+                else if (impact === "moderate") badgeClass = "bg-info";
+                else badgeClass = "bg-secondary";
+
+                html += `
+                    <tr>
+                        <td><b>${violation.ruleId || violation.RuleId || ''}</b></td>
+
+                        <td class="text-center">
+                            <span class="badge ${badgeClass}">
+                                ${impact}
+                            </span>
+                        </td>
+
+                        <td>${violation.description || violation.Description || ''}</td>
+
+                        <td><code>${violation.selector || violation.Selector || ''}</code></td>
+
+                        <td>
+                            <pre class="small bg-light p-2 rounded" style="white-space: pre-wrap;">${escapeHtml(violation.html || violation.Html)}</pre>
+                        </td>
+
+                        <td class="text-center">
+                            <a href="${violation.help || violation.Help || '#'}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                Wskazówki
+                            </a>
+                        </td>
+
+                        <td class="text-success fw-bold">${item.suggestion || item.Suggestion || ''}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="text-center mt-5">
+                    @if (Context.Session.GetString("SessionIdUser") == null){
+                        <a href="/Home/AllScans" class="btn btn-outline-secondary btn-lg px-4">
+                            Wróć
+                        </a>
+                    }else{
+                        <a href="/Reports/Index" class="btn btn-outline-secondary btn-lg px-4">
+                            Wróć
+                        </a>
+                    }
+                    
+                </div>
+            `;
+
+            content.innerHTML = html;
+        })
+        .catch(error => {
+            console.error(error);
+            document.getElementById("scanContent").innerHTML = `
+                <div class="alert alert-danger text-center">
+                    Nie udało się pobrać wyników skanu.
+                </div>
+            `;
+        });
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+        }
+</script>

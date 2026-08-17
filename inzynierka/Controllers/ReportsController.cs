@@ -10,25 +10,7 @@ namespace inzynierka.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            using InzynierkaContext _context = new InzynierkaContext();
-
-            var sessionIdUser = HttpContext.Session.GetString("SessionIdUser");
-            int sessionIdUserToInt = int.Parse(sessionIdUser);
-            
-            var reports = _context.Scan
-            .Include(s => s.Violations)
-            .Where(s => s.UserId == sessionIdUserToInt)
-            .OrderByDescending(s => s.ScanDate)
-            .Select(s => new ReportListItemViewModel
-            {
-                ScanId = s.ScanId,
-                Url = s.Url,
-                ScanDate = s.ScanDate,
-                ErrorCount = s.Violations.Count
-            })
-            .ToList();
-
-            return View(reports);
+            return View();
         }
         public IActionResult Declaration(int id)
         {

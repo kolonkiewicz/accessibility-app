@@ -1,0 +1,153 @@
+@{
+    ViewData["Title"] = "Wszystkie skany";
+}
+
+<div class="container my-5">
+
+    <div class="text-center mb-4">
+        <h1 class="fw-bold">Wszystkie skany</h1>
+    </div>
+    <div class="mb-4">
+        <input type="text" id="searchInput" class="form-control" placeholder="Wyszukaj po adresie URL..."
+               autocomplete="off">
+    </div>
+
+    <div class="table-responsive shadow-sm rounded">
+        <table class="table table-hover table-bordered align-middle">
+
+            <thead class="table-light">
+                <tr class="text-center">
+                    <th style="width: 45%;">Adres URL</th>
+                    <th>Data skanu</th>
+                    <th>Liczba błędów</th>
+                    <th style="width: 140px;">Akcje</th>
+                </tr>
+            </thead>
+
+            <tbody id="scansTableBody">
+                <tr>
+                    <td colspan="4" class="text-center">
+                        Ładowanie...
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+
+<script>
+    let allScans = [];
+
+    function normalizeUrl(url) {
+        return url
+            .toLowerCase()
+            .trim()
+            .replace(/^https?:\/\//, '')
+            .replace(/^www\./, '')
+            .replace(/\/$/, '');
+    }
+
+    function displayScans(scans) {
+        const tableBody = document.getElementById('scansTableBody');
+
+        tableBody.innerHTML = '';
+
+        if (scans.length === 0) {
+            tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center">
+                            Brak skanów.
+                        </td>
+                    </tr>
+                `;
+
+            return;
+        }
+        scans.forEach(scan => {
+
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                    <td class="fw-semibold">
+                        ${scan.url}
+                    </td>
+
+                    <td class="text-center">
+                        ${new Date(scan.scanDate).toLocaleString()}
+                    </td>
+
+                    <td class="text-center">
+                        <span class="badge ${scan.violationsCount === 0
+                    ? 'bg-success'
+                    : scan.violationsCount < 10
+                        ? 'bg-warning'
+                        : 'bg-danger'
+                }" style="font-size: 14px;">
+                            ${scan.violationsCount}
+                        </span>
+                    </td>
+
+                    <td class="text-center">
+                        <div class="btn-group d-flex justify-content-center gap-2">
+
+                            <a class="btn btn-primary btn-sm px-3"
+                               href="/Home/ScanDetails/${scan.scanID}">
+                                <i class="fa-solid fa-magnifying-glass-chart me-1"></i>
+                                Szczegóły
+                            </a>
+
+                        </div>
+                    </td>
+                `;
+
+            tableBody.appendChild(row);
+        });
+    }
+
+    fetch('/api/AllScansApi')
+        .then(response => {
+
+            if (!response.ok) {
+                throw new Error('nie udało się pobrać skanów.');
+            }
+            return response.json()
+
+        })
+        .then(scans => {
+
+                allScans = scans;
+                displayScans(allScans);
+
+            })
+        .catch(error => {
+
+            console.error(
+                "Błąd podczas pobierania skanów:",
+                error
+            );
+
+            document.getElementById('scansTableBody').innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center text-danger">
+                        Nie udało się pobrać skanów.
+                    </td>
+                </tr>
+            `;
+        });
+        document.getElementById('searchInput').addEventListener('input', function () {
+
+            const searchValue = normalizeUrl(this.value);
+
+            const filteredScans = allScans.filter(scan => {
+
+                const scanUrl = normalizeUrl(scan.url);
+
+                return scanUrl.includes(searchValue);
+            });
+
+            displayScans(filteredScans);
+        });
+
+</script>

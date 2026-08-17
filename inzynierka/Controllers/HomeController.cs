@@ -54,6 +54,11 @@ public class HomeController : Controller
         return RedirectToAction("Dashboard", "Dashboard");
     }
 
+    public IActionResult AllScans()
+    {
+            return View();
+    }
+
     [HttpPost]
     public async Task<IActionResult> Scan(string url)
     {
@@ -138,35 +143,8 @@ public class HomeController : Controller
         }
     }
 
-    // *************** WIDOK KONKRETNEGO SKANU *********************
-
     public IActionResult ScanDetails(int id)
     {
-        using InzynierkaContext _context = new InzynierkaContext();
-        var scan = _context.Scan
-            .Include(s => s.Violations)
-            .Where(s => s.ScanId == id)
-            .Select(s => new ScanResultViewModel
-            {
-                ScanId = s.ScanId,
-                Url = s.Url,
-                Date = s.ScanDate,
-                Violations = s.Violations
-                    .Select(v => new ScanViolationWithFix
-                    {
-                        Violation = v,
-                        Suggestion = _context.FixSuggestions
-                            .Where(f => f.RuleId == v.RuleId)
-                            .Select(f => f.Suggestion)
-                            .FirstOrDefault() ?? "Brak rekomendacji"
-                    }).ToList()
-            })
-            .FirstOrDefault();
-
-        if (scan == null)
-            return NotFound();
-
-        return View(scan);
+        return View(id);
     }
-
 }

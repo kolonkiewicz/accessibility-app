@@ -1,70 +1,229 @@
-﻿@model IEnumerable<inzynierka.Models.ViewModels.ReportListItemViewModel>
-
-<div class="container my-5">
+﻿<div class="container my-5">
 
     <div class="text-center mb-4">
         <h1 class="fw-bold">Twoje raporty</h1>
-        <p class="text-muted">Lista wszystkich wykonanych przez ciebie analiz dostępności</p>
+        <p class="text-muted">
+            Lista wszystkich wykonanych przez ciebie analiz dostępności
+        </p>
     </div>
 
-    @if (!Model.Any())
-    {
-        <div class="alert alert-info text-center py-4 fs-5 shadow-sm">
-            Brak raportów dla tego użytkownika.
+    <div class="mb-4">
+        <input type="text" id="searchInput" class="form-control" placeholder="Wyszukaj po adresie URL..."
+               autocomplete="off">
+    </div>
+
+    <div id="reportsContainer">
+
+        <div class="text-center">
+            Ładowanie raportów...
         </div>
-    }
-    else
-    {
-        <div class="table-responsive shadow-sm rounded">
-            <table class="table table-hover table-bordered align-middle">
-                <thead class="table-light">
-                    <tr class="text-center">
-                        <th style="width: 45%;">Adres URL</th>
-                        <th>Data skanu</th>
-                        <th>Liczba błędów</th>
-                        <th style="width: 140px;">Akcje</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var report in Model)
-                    {
-                        <tr>
-                            <td class="fw-semibold">@report.Url</td>
 
-                            <td class="text-center">
-                                @report.ScanDate.ToString("yyyy-MM-dd HH:mm")
-                            </td>
+    </div>
 
-                            <td class="text-center">
-                                <span class="badge
-                                    @(report.ErrorCount == 0 ? "bg-success" :
-                                      report.ErrorCount < 10 ? "bg-warning" : "bg-danger")"
-                                      style="font-size: 14px;">
-                                    @report.ErrorCount
-                                </span>
-                            </td>
-
-                            <td class="text-center">
-                                <div class="btn-group d-flex justify-content-center gap-2" role="group">
-                                    <a class="btn btn-outline-primary btn-sm px-3 "
-                               asp-controller="Reports"
-                               asp-action="Declaration"
-                               asp-route-id="@report.ScanId">
-                                        <i class="fa-solid fa-file-signature me-1"></i> Deklaracja
-                                    </a>
-
-                                    <a class="btn btn-primary btn-sm px-3"
-                               asp-controller="Home"
-                               asp-action="ScanDetails"
-                               asp-route-id="@report.ScanId">
-                                        <i class="fa-solid fa-magnifying-glass-chart me-1"></i> Szczegóły
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    }
 </div>
+
+<script>
+    let allReports = [];
+
+    function normalizeUrl(url) {
+        return url
+            .toLowerCase()
+            .trim()
+            .replace(/^https?:\/\//, '')
+            .replace(/^www\./, '')
+            .replace(/\/$/, '');
+    }
+
+    function displayReports(reports) {
+
+        const container = document.getElementById('reportsContainer');
+
+        container.innerHTML = '';
+
+        if (reports.length === 0) {
+
+            container.innerHTML = `
+                <div class="alert alert-info text-center py-4 fs-5 shadow-sm">
+                    Brak raportów pasujących do wyszukiwania.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        let html = `
+            <div class="table-responsive shadow-sm rounded">
+
+                <table class="table table-hover table-bordered align-middle">
+
+                    <thead class="table-light">
+                        <tr class="text-center">
+
+                            <th style="width: 45%;">
+                                Adres URL
+                            </th>
+
+                            <th>
+                                Data skanu
+                            </th>
+
+                            <th>
+                                Liczba błędów
+                            </th>
+
+                            <th style="width: 140px;">
+                                Akcje
+                            </th>
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+        `;
+
+        reports.forEach(report => {
+
+            let badgeClass;
+
+
+            if (report.errorCount === 0) {
+                badgeClass = 'bg-success';
+            }
+            else if (report.errorCount < 10) {
+                badgeClass = 'bg-warning';
+            }
+            else {
+                badgeClass = 'bg-danger';
+            }
+
+
+            html += `
+                <tr>
+
+                    <td class="fw-semibold">
+                        ${report.url}
+                    </td>
+
+
+                    <td class="text-center">
+                        ${new Date(report.scanDate).toLocaleString()}
+                    </td>
+
+
+                    <td class="text-center">
+
+                        <span class="badge ${badgeClass}"
+                              style="font-size: 14px;">
+
+                            ${report.errorCount}
+
+                        </span>
+
+                    </td>
+
+
+                    <td class="text-center">
+
+                        <div class="btn-group d-flex justify-content-center gap-2"
+                             role="group">
+
+                            <a class="btn btn-outline-primary btn-sm px-3"
+                               href="/Reports/Declaration/${report.scanId}">
+
+                                <i class="fa-solid fa-file-signature me-1"></i>
+
+                                Deklaracja
+
+                            </a>
+
+
+                            <a class="btn btn-primary btn-sm px-3"
+                               href="/Home/ScanDetails/${report.scanId}">
+
+                                <i class="fa-solid fa-magnifying-glass-chart me-1"></i>
+
+                                Szczegóły
+
+                            </a>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+            `;
+        });
+
+
+        html += `
+                    </tbody>
+
+                </table>
+
+            </div>
+        `;
+
+
+        container.innerHTML = html;
+    }
+
+    fetch('/api/ReportsApi')
+        .then(response => {
+
+            if (response.status === 401) {
+                throw new Error('Użytkownik nie jest zalogowany.');
+            }
+
+            if (!response.ok) {
+                throw new Error('Nie udało się pobrać raportów.');
+            }
+
+
+            return response.json();
+        })
+
+
+        .then(reports => {
+
+            allReports = reports;
+
+            displayReports(allReports);
+        })
+
+
+        .catch(error => {
+
+            console.error(
+                'Błąd podczas pobierania raportów:',
+                error
+            );
+
+
+            document.getElementById('reportsContainer').innerHTML = `
+                <div class="alert alert-danger text-center">
+
+                    Nie udało się pobrać raportów.
+
+                </div>
+            `;
+        });
+
+
+    document.getElementById('searchInput').addEventListener('input', function () {
+
+        const searchValue = normalizeUrl(this.value);
+
+        const filteredReports = allReports.filter(report => {
+
+            const reportUrl = normalizeUrl(report.url);
+
+
+            return reportUrl.includes(searchValue);
+        });
+
+
+        displayReports(filteredReports);
+    });
+
+</script>
