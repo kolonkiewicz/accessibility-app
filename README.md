@@ -4,11 +4,12 @@ A web application that supports the analysis of website compliance with the WCAG
 
 ## Technologies
 
-- **Framework:** .NET 6.0 (ASP.NET Core MVC)
-- **Language:** C#
+- **Framework:** .NET 10.0 (ASP.NET Core MVC, REST API)
+- **Language:** C#, JavaScript (JS)
 - **Data Access:** Entity Framework Core
 - **Database:** SQLite
 - **Automation and Accessibility Audit:** PuppeteerSharp (Chromium browser automation), axe-core (HTML accessibility testing engine)
+- **Testing:** xUnit, Moq
 - **Frontend:** Razor (.cshtml), Bootstrap, CSS3
 
 ## Features
